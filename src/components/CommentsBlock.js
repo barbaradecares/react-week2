@@ -25,34 +25,33 @@ class CommentsBlock extends Component {
         <strong className="d-block text-gray-dark">{comment.author}</strong>
         {comment.content}
       </p>
-      {comment.author === getUser().username ? (
+      {comment.author === getUser().username && (
         <FontAwesomeIcon
           icon="trash"
           onClick={() => this.deleteComment(comment)}
         />
-      ) : (
-        ""
       )}
     </div>
   );
 
   handleSubmit = e => {
     e.preventDefault();
-    const comment = {
-      content: this.state.input
-    };
-
-    commentsService.insert(this.props.recipeSlug, comment);
-    this.setState(state => {
-      state.comments = commentsService.get(this.props.recipeSlug);
-      state.input = "";
-      return state;
+    try {
+      commentsService.insert(this.props.recipeSlug, {
+        content: this.state.input
+      });
+    } catch (err) {
+      alert(err);
+    }
+    this.setState({
+      comments: commentsService.get(this.props.recipeSlug),
+      input: ""
     });
   };
 
-  form = () => {
+  renderForm = () => {
     return (
-      <form>
+      <form onSubmit={this.handleSubmit}>
         <div className="form-group">
           <label htmlFor="exampleInputEmail1">Comment</label>
           <textarea
@@ -67,12 +66,7 @@ class CommentsBlock extends Component {
             placeholder="Insert your comment here"
           />
         </div>
-        <button
-          disabled={false}
-          type="submit"
-          className="btn btn-primary"
-          onClick={this.handleSubmit}
-        >
+        <button disabled={false} type="submit" className="btn btn-primary">
           Submit
         </button>
       </form>
@@ -86,7 +80,7 @@ class CommentsBlock extends Component {
           <h6 className="border-bottom border-gray pb-2 mb-0">Comments</h6>
           {this.state.comments.map(comment => this.renderComment(comment))}
         </div>
-        {isLogged() ? this.form() : ""}
+        {isLogged() && this.renderForm()}
       </div>
     );
   };

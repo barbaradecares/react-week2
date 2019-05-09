@@ -7,7 +7,7 @@ import Login from "./Login";
 import User from "./User";
 import { slugify } from "../helpers";
 import recipes from "../sample_data/recipes.json";
-import { withRouter, matchPath } from "react-router";
+import { withRouter, matchPath, Redirect } from "react-router";
 import { register, login, isLogged, logout } from "../services/loginService";
 
 class App extends Component {
@@ -48,17 +48,22 @@ class App extends Component {
   };
 
   render() {
-    const LoginRoute = () => (
-      <Login
-        register={register}
-        login={login}
-        redirectHome={this.redirectHome}
-        isLogged={isLogged}
-      />
-    );
-    const ProfileRoute = () => (
-      <User redirectHome={this.redirectHome} logout={logout} />
-    );
+    const LoginRoute = () =>
+      isLogged() ? (
+        <Redirect to="/" />
+      ) : (
+        <Login
+          register={register}
+          login={login}
+          redirectHome={this.redirectHome}
+        />
+      );
+    const ProfileRoute = () =>
+      !isLogged() ? (
+        <Redirect to="/" />
+      ) : (
+        <User redirectHome={this.redirectHome} logout={logout} />
+      );
     return (
       <div className="App">
         <Navbar
@@ -81,7 +86,6 @@ class App extends Component {
             path="/recipe/:slug"
             render={props => (
               <RecipePage
-                slugify={slugify}
                 recipe={this.getRecipeFromSlug(props.match.params.slug)}
               />
             )}
