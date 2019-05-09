@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import CommentsBlock from "./CommentsBlock";
-import slugify from "../helpers";
+import { slugify } from "../helpers";
 
 const RecipePage = ({ recipe }) => {
   if (recipe) {
